@@ -1,7 +1,10 @@
+use crate::sections::{PersonalInfo, Entry};
+
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ResumeBuilderApp {
+    personal_info: PersonalInfo,
     label: String,
 
     #[serde(skip)] // This how you opt-out of serialization of a field
@@ -11,6 +14,15 @@ pub struct ResumeBuilderApp {
 impl Default for ResumeBuilderApp {
     fn default() -> Self {
         Self {
+            // Fill with empty data
+            personal_info: PersonalInfo {
+                name: "".to_owned(),
+                email: "".to_owned(),
+                phone: "".to_owned(),
+                location: "".to_owned(),
+                linkedin: "".to_owned(),
+                github: "".to_owned()
+            },
             label: "Hello World!".to_owned(),
             value: 2.7,
         }
@@ -30,6 +42,19 @@ impl ResumeBuilderApp {
         }
 
         Default::default()
+    }
+
+    fn generate(&mut self) {
+        // Print the generated resume to the console
+        println!("Generating resume...");
+        // Pretty print the personal info on the user's input
+        println!("Personal Info:");
+        println!("Name: {}", self.personal_info.name);
+        println!("Email: {}", self.personal_info.email);
+        println!("Phone: {}", self.personal_info.phone);
+        println!("Location: {}", self.personal_info.location);
+        println!("LinkedIn: {}", self.personal_info.linkedin);
+        println!("GitHub: {}", self.personal_info.github);
     }
 }
 
@@ -60,20 +85,45 @@ impl eframe::App for ResumeBuilderApp {
                 }
 
                 egui::widgets::global_dark_light_mode_buttons(ui);
+
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    ui.add(egui::Label::new("Created by: Jai Wargacki"));
+                });
             });
         });
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.heading("Resume Builder");
-
-            ui.horizontal(|ui| {
-                ui.label("Write something: ");
-                ui.text_edit_singleline(&mut self.label);
+            // Personal Info Section
+            egui::CollapsingHeader::new("Personal Info")
+            .default_open(true)
+            .show(ui, |ui| {
+                egui::Grid::new("personal_info_grid")
+                .spacing([5.0, 5.0])
+                .min_col_width(50.0)
+                .max_col_width(200.0)
+                .show(ui, |ui| {
+                    ui.label("Name: ");
+                    ui.text_edit_singleline(&mut self.personal_info.name);
+                    ui.end_row();
+                    ui.label("Email: ");
+                    ui.text_edit_singleline(&mut self.personal_info.email);
+                    ui.label("Phone: ");
+                    ui.text_edit_singleline(&mut self.personal_info.phone);
+                    ui.end_row();
+                    ui.label("Location: ");
+                    ui.text_edit_singleline(&mut self.personal_info.location);
+                    ui.end_row();
+                    ui.label("LinkedIn: ");
+                    ui.text_edit_singleline(&mut self.personal_info.linkedin);
+                    ui.label("GitHub: ");
+                    ui.text_edit_singleline(&mut self.personal_info.github);
+                    ui.end_row();
+                });
             });
-
-            ui.add(egui::Slider::new(&mut self.value, 0.0..=10.0).text("value"));
-            if ui.button("Increment").clicked() {
-                self.value += 1.0;
+            ui.separator();
+            
+            if ui.button("Generate").clicked() {
+                self.generate();
             }
 
             ui.separator();
