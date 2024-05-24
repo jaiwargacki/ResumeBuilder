@@ -8,6 +8,7 @@ pub struct PersonalInfo {
     pub github: String
 }
 
+#[derive(serde::Deserialize, serde::Serialize)]
 pub struct Entry {
     pub institution: String,
     pub title: String,

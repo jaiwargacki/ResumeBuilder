@@ -6,10 +6,10 @@ use crate::utils::{format_phone};
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 pub struct ResumeBuilderApp {
     personal_info: PersonalInfo,
-    label: String,
-
-    #[serde(skip)] // This how you opt-out of serialization of a field
-    value: f32,
+    bio: String,
+    skills: Vec<String>,
+    experience: Vec<Entry>,
+    education: Vec<Entry>,
 }
 
 impl Default for ResumeBuilderApp {
@@ -24,8 +24,10 @@ impl Default for ResumeBuilderApp {
                 linkedin: "".to_owned(),
                 github: "".to_owned()
             },
-            label: "Hello World!".to_owned(),
-            value: 2.7,
+            bio: "".to_owned(),
+            skills: vec![],
+            experience: vec![],
+            education: vec![],
         }
     }
 }
@@ -45,17 +47,24 @@ impl ResumeBuilderApp {
         Default::default()
     }
 
+    fn add_entry(&mut self, entries_name: &str) {
+        let entries = match entries_name {
+            "Experience" => &mut self.experience,
+            "Education" => &mut self.education,
+            _ => panic!("Invalid entries name")
+        };
+        entries.push(Entry {
+            institution: "".to_owned(),
+            title: "".to_owned(),
+            start_date: "".to_owned(),
+            end_date: "".to_owned(),
+            location: "".to_owned(),
+            description: vec![]
+        });
+    }
+
     fn generate(&mut self) {
-        // Print the generated resume to the console
         println!("Generating resume...");
-        // Pretty print the personal info on the user's input
-        println!("Personal Info:");
-        println!("Name: {}", self.personal_info.name);
-        println!("Email: {}", self.personal_info.email);
-        println!("Phone: {}", self.personal_info.phone);
-        println!("Location: {}", self.personal_info.location);
-        println!("LinkedIn: {}", self.personal_info.linkedin);
-        println!("GitHub: {}", self.personal_info.github);
     }
 }
 
@@ -120,6 +129,101 @@ impl eframe::App for ResumeBuilderApp {
                     ui.text_edit_singleline(&mut self.personal_info.github);
                     ui.end_row();
                 });
+            });
+            ui.separator();
+
+            // Work Experience Section
+            egui::CollapsingHeader::new("Work Experience")
+            .default_open(true)
+            .show(ui, |ui| {
+                ui.horizontal(|ui| {
+                    if ui.button("Add Experience").clicked() {
+                        self.add_entry("Experience");
+                    }
+                    if ui.button("Remove Experience").clicked() {
+                        self.experience.pop();
+                    }
+                });
+                
+                // For each education entry, display a collapsible header
+                for (i, entry) in self.experience.iter_mut().enumerate() {
+                    egui::CollapsingHeader::new(format!("Experience {}", i + 1))
+                    .default_open(true)
+                    .show(ui, |ui| {
+                        egui::Grid::new("experience_grid")
+                        .spacing([5.0, 5.0])
+                        .min_col_width(50.0)
+                        .max_col_width(200.0)
+                        .show(ui, |ui| {
+                            ui.label("Company: ");
+                            ui.text_edit_singleline(&mut entry.institution);
+                            ui.label("Location: ");
+                            ui.text_edit_singleline(&mut entry.location);
+                            ui.end_row();
+                            ui.label("Title: ");
+                            ui.text_edit_singleline(&mut entry.title);
+                            ui.label("Start Date: ");
+                            ui.text_edit_singleline(&mut entry.start_date);
+                            ui.label("End Date: ");
+                            ui.text_edit_singleline(&mut entry.end_date);
+                            ui.end_row();
+                            ui.label("Details: ");
+                            ui.horizontal(|ui| {
+                                if ui.button("Add Bullet").clicked() {
+                                    entry.description.push("".to_owned());
+                                }
+                                if ui.button("Remove Bullet").clicked() {
+                                    entry.description.pop();
+                                }
+                            });
+                            ui.end_row();
+                            for (_, bullet) in entry.description.iter_mut().enumerate() {
+                                ui.label("o ");
+                                ui.text_edit_multiline(bullet);
+                                ui.end_row();
+                            }
+                        });
+                    });
+                }
+            });
+            ui.separator();
+
+            // Education Section
+            egui::CollapsingHeader::new("Education")
+            .default_open(true)
+            .show(ui, |ui| {
+                ui.horizontal(|ui| {
+                    if ui.button("Add Education").clicked() {
+                        self.add_entry("Education");
+                    }
+                    if ui.button("Remove Education").clicked() {
+                        self.education.pop();
+                    }
+                });
+                
+                // For each education entry, display a collapsible header
+                for (i, entry) in self.education.iter_mut().enumerate() {
+                    egui::CollapsingHeader::new(format!("Education {}", i + 1))
+                    .default_open(true)
+                    .show(ui, |ui| {
+                        egui::Grid::new("education_grid")
+                        .spacing([5.0, 5.0])
+                        .min_col_width(50.0)
+                        .max_col_width(200.0)
+                        .show(ui, |ui| {
+                            ui.label("Institution: ");
+                            ui.text_edit_singleline(&mut entry.institution);
+                            ui.label("Location: ");
+                            ui.text_edit_singleline(&mut entry.location);
+                            ui.end_row();
+                            ui.label("Degree: ");
+                            ui.text_edit_singleline(&mut entry.title);
+                            ui.label("End Date: ");
+                            ui.text_edit_singleline(&mut entry.end_date);
+                            ui.end_row();
+                        });
+                    });
+                }
             });
             ui.separator();
 
