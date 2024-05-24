@@ -2,4 +2,5 @@
 
 mod app;
 mod sections;
+mod utils;
 pub use app::ResumeBuilderApp;

@@ -1,4 +1,5 @@
 use crate::sections::{PersonalInfo, Entry};
+use crate::utils::{format_phone};
 
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
@@ -121,6 +122,13 @@ impl eframe::App for ResumeBuilderApp {
                 });
             });
             ui.separator();
+
+            // Format as needed
+            self.personal_info.phone = format_phone(&self.personal_info.phone);
+            self.personal_info.email = self.personal_info.email.to_lowercase();
+            self.personal_info.linkedin = self.personal_info.linkedin.to_lowercase();
+            self.personal_info.github = self.personal_info.github.to_lowercase();
+
             
             if ui.button("Generate").clicked() {
                 self.generate();
