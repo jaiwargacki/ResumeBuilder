@@ -1,0 +1,100 @@
+% Author: Jai Wargacki
+%-----------------------------------------------------------
+\documentclass[letterpaper,12pt]{article}
+
+%-----------------------------------------------------------
+\usepackage{enumitem} % for lists
+\usepackage{hyperref} % for links
+\usepackage[margin=0.5in]{geometry} % set margins
+\usepackage[empty]{fullpage} % for margins, page numbering, etc.
+\usepackage[subtle]{savetrees} % for compactness (one page)
+
+%-----------------------------------------------------------
+\setlength{\parindent}{0pt} % no indent
+
+% Hide url boxes
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    filecolor=black,      
+    urlcolor=black,
+}
+
+%-----------------------------------------------------------
+\newcommand{\divisionLine}[0]{
+    \vspace{2pt}
+    % thicker line
+    \hrule height 0.75pt
+    \vspace{2pt}
+}
+
+\newcommand{\resumeHeader}[3]{
+    \begin{center} 
+    \Large{\textbf{#1}}\\
+    #2 % phone number
+    $|$ #3 % email
+    %$|$ \href{https://www.linkedin.com/in/#4}{linkedin.com/in/#4} % linkedin
+    \end{center}
+    \vspace{-8pt}
+}
+
+\newcommand{\newSection}[1]{
+    \vspace{0pt}
+    {{#1}}
+    \divisionLine
+    \vspace{10pt}
+}
+
+\newcommand{\newEntity}[4]{
+    \normalsize
+    \vspace*{-\baselineskip}
+    \begin{center}
+        \textbf{#1} \hfill \vphantom{} #2\\
+        \textit{#3} \hfill \vphantom{} \textit{#4}
+    \end{center}
+    \vspace*{-\baselineskip}
+    \vspace{5pt}
+}
+
+\newcommand{\contEntity}[2]{
+    \vspace*{-\baselineskip}
+    \begin{center}
+        \textit{#1} \hfill \vphantom{} \textit{#2}
+    \end{center}
+    \vspace*{-\baselineskip}
+    \vspace{5pt}
+}
+
+\newcommand{\detailListStart}{
+    \vspace{0pt}
+    \begin{itemize}[label={$\circ$}, leftmargin=15pt, rightmargin=15pt, topsep=0pt, itemsep=0pt, parsep=0pt]
+}
+
+\newcommand{\detailListEnd}{
+    \end{itemize}
+    \vspace{4pt}
+}
+
+\newcommand{\detail}[1]{
+    \vspace{0pt}
+    {\small{\item #1}}
+    \vspace{0pt}
+}
+%-----------------------------------------------------------
+
+\begin{document}
+
+% Margins .5 all around
+\newgeometry{margin=0.5in}
+
+% Header
+\resumeHeader{{{name}}}{{{phone}}}{{{email}}}
+
+% Professional Experience
+{{work-experience}}
+
+% Education
+{{education}}
+
+\end{document}
+%-----------------------------------------------------------
